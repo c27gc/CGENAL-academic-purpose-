@@ -53,11 +53,14 @@ for i in range(0,4):
 #AQUI SE DEFINE LA POLITICA DE SELECCIOND DE PADRES
 autEx=extendedMatrix(aut)
 print(np.shape(autEx))
+
+dx = {1:-1, 2:0, 3:1, 4:1}
+dy = {1:0, 2:-1, 3:0, 4:1}
+
 for i in range(0,4):
     for j in range(0,5):
-        t=np.random.randint(-1,2)
-
-        autEx[i+1,j+1]
+        t=np.random.randint(0,4)
+        autEx[i + 1 + dx[t] , j + 1 + dy[t]]
 
 fitAverages.append(a.get_fitness_average())
 thebest.append(a.get_best_individual().get_fitness())
