@@ -10,14 +10,19 @@ def extendedMatrix(m):
     s=np.shape(m)
     B=[]
     A=m
-    if len(s)!=3:
+    if len(s) > 3 or len(s) < 2:
         print("Error, la matriz debe ser al menos de 2 dimensiones y maximo de 3 demensioens.")
     else:
-        B=np.pad(A,((1, 1), (1, 1), (0,0)), 'wrap')
+        if len(s) == 2:
+            B=np.pad(A,((1, 1), (1, 1)), 'wrap')
+        if len(s) == 3:
+            B=np.pad(A,((1, 1), (1, 1), (0,0)), 'wrap')
+
         B[0,0]=0
         B[0,s[1]+1]=0
         B[s[0]+1,0]=0
         B[s[0]+1,s[1]+1]=0
+        print(type(B))
     return B
 
 numero_de_elementos = 20
@@ -51,17 +56,26 @@ for i in range(0,4):
         k+=1
 
 #AQUI SE DEFINE LA POLITICA DE SELECCIOND DE PADRES
-autEx=extendedMatrix(aut)
+autEx = extendedMatrix(aut)
+fitEx = extendedMatrix(fit)
+
 print(np.shape(autEx))
 
-dx = {1:-1, 2:0, 3:1, 4:1}
-dy = {1:0, 2:-1, 3:0, 4:1}
+dx = {0:-1, 1:0, 2:1, 3:0}
+dy = {0:0, 1:-1, 2:0, 3:1}
+
+p2 = np.zeros((4,5,12))
+p2fit = np.zeros((4,5))
 
 for i in range(0,4):
     for j in range(0,5):
         t=np.random.randint(0,4)
-        autEx[i + 1 + dx[t] , j + 1 + dy[t]]
-
+        print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
+        x = i + 1 + dx[t]
+        y = j + 1 + dy[t]
+        p2[i,j] = autEx[x,y]
+        p2fit[i,j] = fitEx[x,y]
+#print(fitEx)
 fitAverages.append(a.get_fitness_average())
 thebest.append(a.get_best_individual().get_fitness())
 b = Crossing(a,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
