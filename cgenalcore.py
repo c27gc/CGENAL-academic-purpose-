@@ -389,6 +389,13 @@ class Crossing():
                     self.__childs[self.__childs.index(ChildsAux.get_worst_individual().chromo)]=self.list_of_individuals.get_best_individual().chromo
                 break
 
+    def sCross(self):
+        count = 0
+        self.__childs = []
+        self.__mutations = 0
+        occur=0
+        while(1):
+
 
 
 
