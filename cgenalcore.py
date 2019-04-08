@@ -395,7 +395,7 @@ class Crossing():
         self.__mutations = 0
         occur=0
         while(1):
-
+            
 
 
 
