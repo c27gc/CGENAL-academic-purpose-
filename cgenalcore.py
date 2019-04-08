@@ -389,14 +389,32 @@ class Crossing():
                     self.__childs[self.__childs.index(ChildsAux.get_worst_individual().chromo)]=self.list_of_individuals.get_best_individual().chromo
                 break
 
-    def sCross(self):
+    def sCross(self, a, b):
         count = 0
+        A = a.tolist()
+        B = b.tolist()
         self.__childs = []
         self.__mutations = 0
         occur=0
         while(1):
-            
+            for i in range(0,np.shape(a)[0]):
+                for j in range(0,np.shape(b)[1]):
+                    p1=A[:self.cross_point]
+                    k=p1.copy()
+                    for i in range(0,len(A)):
+                        try:
+                            inx=p1.index(self.__parents[1][i])
+                        except ValueError:
+                            k.append(self.__parents[1][i])
+                    self.__childs.append(k)
 
+                    p2=self.__parents[1][:self.cross_point]
+                    k=p2.copy()
+                    for i in range(0,len(A)):
+                        try:
+                            inx=p2.index(A[i])
+                        except ValueError:
+                            k.append(self.__parents[0][i])
 
 
 
