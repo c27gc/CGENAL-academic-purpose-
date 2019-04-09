@@ -260,7 +260,7 @@ class Crossing():
                             occur-=1
 
         #"""NUEVOOOOOO"""
-        if self.problem == 7:
+        if (self.problem == 7) or (self.problem == 8):
             r = random.random()
             occur = 0
             gen = []
@@ -390,6 +390,7 @@ class Crossing():
                 break
 
     def sCross(self, a, b):
+        self.problem = 8
         count = 0
         A = a.tolist()
         B = b.tolist()

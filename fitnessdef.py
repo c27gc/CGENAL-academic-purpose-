@@ -90,7 +90,7 @@ class ChromosomeClass():
             self.__fitness=((math.sin(x))*(math.cos(y))*(math.tan(z)))
 
         #"""CODIGO NUEVOOOOOO"""
-        if problem == 7:
+        if (problem == 7) or (problem == 8):
             chromoc=chromo.copy()
             chromoc.append(chromo[0])
             posiciones = {1:[0,0],2:[0,1],3:[0,2],4:[0,3],
