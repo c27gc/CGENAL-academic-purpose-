@@ -365,10 +365,10 @@ class Crossing():
                             k.append(self.__parents[0][i])
 
                     self.__childs.append(k)
-                    self.__childs[count], occur= self.mutation(self.__childs[count])
-                    self.__mutations+=occur
-                    self.__childs[count+1], occur= self.mutation(self.__childs[count+1])
-                    self.__mutations+=occur
+                    self.__childs[count], occur = self.mutation(self.__childs[count])
+                    self.__mutations += occur
+                    self.__childs[count+1], occur = self.mutation(self.__childs[count+1])
+                    self.__mutations += occur
                     """print("Padres({}):".format(self.cross_point) )
                     for i in range(0,len(self.__parents)):
                         print("{}".format(self.__parents[i]))
@@ -380,13 +380,13 @@ class Crossing():
             #print("{} \t {}".format(len(self.__childs),self.list_of_individuals.get_individuals()))
             if len(self.__childs)==len(self.list_of_individuals.get_individuals()):
                 if self.elitism == "direct-elitism":
-                    self.__childs[random.randint(0,len(self.__childs)-1)]=self.list_of_individuals.get_second_best_individual().chromo
-                    self.__childs[random.randint(0,len(self.__childs)-1)]=self.list_of_individuals.get_best_individual().chromo
+                    self.__childs[random.randint(0,len(self.__childs)-1)] = self.list_of_individuals.get_second_best_individual().chromo
+                    self.__childs[random.randint(0,len(self.__childs)-1)] = self.list_of_individuals.get_best_individual().chromo
 
                 if self.elitism == "absolute-elitism":
                     ChildsAux=Generation(self.__childs,self.problem)
-                    self.__childs[self.__childs.index(ChildsAux.get_second_worst_individual().chromo)]=self.list_of_individuals.get_second_best_individual().chromo
-                    self.__childs[self.__childs.index(ChildsAux.get_worst_individual().chromo)]=self.list_of_individuals.get_best_individual().chromo
+                    self.__childs[self.__childs.index(ChildsAux.get_second_worst_individual().chromo)] = self.list_of_individuals.get_second_best_individual().chromo
+                    self.__childs[self.__childs.index(ChildsAux.get_worst_individual().chromo)] = self.list_of_individuals.get_best_individual().chromo
                 break
 
     def sCross(self, a, b):
@@ -399,26 +399,34 @@ class Crossing():
         while(1):
             for i in range(0,np.shape(a)[0]):
                 for j in range(0,np.shape(a)[1]):
-                    p1=A[i][j][:self.cross_point]
-                    k=p1.copy()
-                    for t in range(0,len(A[i][j])):
-                        try:
-                            inx=p1.index(B[i][j][t])
-                        except ValueError:
-                            k.append(B[i][j][t])
-                    self.__childs.append(k)
+                    self.cross_point = random.randint(1,11)
+                    slc = random.choice([True, False])
 
-                    p2=B[i][j][:self.cross_point]
-                    k=p2.copy()
-                    for i in range(0,len(A[i][j])):
-                        try:
-                            inx=p2.index(A[i])
-                        except ValueError:
-                            k.append(self.__parents[0][i])
+                    if slc :
+                        p1=A[i][j][:self.cross_point]
+                        k=p1.copy()
+                        for t in range(0,len(A[i][j])):
+                            try:
+                                inx=p1.index(B[i][j][t])
+                            except ValueError:
+                                k.append(B[i][j][t])
+                        self.__childs.append(k)
 
+                    else:
+                        p2=B[i][j][:self.cross_point]
+                        k=p2.copy()
+                        for t in range(0,len(A[i][j])):
+                            try:
+                                inx=p2.index(A[i][j][t])
+                            except ValueError:
+                                k.append(A[i][j][t])
+                        self.__childs.append(k)
 
+                    self.__childs[count], occur = self.mutation(self.__childs[count])
+                    self.__mutations += occur
+                    count += 1
 
-
+        
 
     def get_childs(self):
         return self.__childs
