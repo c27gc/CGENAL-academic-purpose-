@@ -399,7 +399,7 @@ class Crossing():
         while(1):
             for i in range(0,np.shape(a)[0]):
                 for j in range(0,np.shape(b)[1]):
-                    p1=A[:self.cross_point]
+                    p1=A[i][j][:self.cross_point]
                     k=p1.copy()
                     for i in range(0,len(A)):
                         try:
