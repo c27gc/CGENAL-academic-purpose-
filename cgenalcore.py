@@ -398,19 +398,19 @@ class Crossing():
         occur=0
         while(1):
             for i in range(0,np.shape(a)[0]):
-                for j in range(0,np.shape(b)[1]):
+                for j in range(0,np.shape(a)[1]):
                     p1=A[i][j][:self.cross_point]
                     k=p1.copy()
-                    for i in range(0,len(A)):
+                    for t in range(0,len(A[i][j])):
                         try:
-                            inx=p1.index(self.__parents[1][i])
+                            inx=p1.index(B[i][j][t])
                         except ValueError:
-                            k.append(self.__parents[1][i])
+                            k.append(B[i][j][t])
                     self.__childs.append(k)
 
-                    p2=self.__parents[1][:self.cross_point]
+                    p2=B[i][j][:self.cross_point]
                     k=p2.copy()
-                    for i in range(0,len(A)):
+                    for i in range(0,len(A[i][j])):
                         try:
                             inx=p2.index(A[i])
                         except ValueError:
