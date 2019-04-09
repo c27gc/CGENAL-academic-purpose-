@@ -46,7 +46,7 @@ class InitialPopulation:
                 print("{}\t {}".format(self.__individuals[i].chromo, self.truncate(self.__individuals[i].get_fitness(),4)))
 
         #"""CODIGO NUEVOOOOOO"""
-        if (problem == 7):
+        if (problem == 7 or problem == 8):
             a=list(range(1,13))
             for i in range(0,number_of_individuals):
                 chromosome=[]
@@ -393,6 +393,7 @@ class Crossing():
         count = 0
         A = a.tolist()
         B = b.tolist()
+        C = np.ones(a.shape())
         self.__childs = []
         self.__mutations = 0
         occur=0
@@ -425,8 +426,8 @@ class Crossing():
                     self.__childs[count], occur = self.mutation(self.__childs[count])
                     self.__mutations += occur
                     count += 1
+                    C[i][j] = self.__childs[count]
 
-        
 
     def get_childs(self):
         return self.__childs
