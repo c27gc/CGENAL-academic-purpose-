@@ -6,6 +6,8 @@ from matplotlib import collections  as mc
 import pylab as pl
 from time import sleep
 
+def vcs():
+
 def extendedMatrix(m):
     s=np.shape(m)
     B=[]
