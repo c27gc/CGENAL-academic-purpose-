@@ -99,8 +99,7 @@ class ChromosomeClass():
             s=0
             for i in range(1,len(chromoc)):
                 s+=self.distancia(posiciones[chromoc[i-1]],posiciones[chromoc[i]])
-
-            self.__fitness = 12/s
+            self.__fitness = (120)/s
         #"""FIN CODIGO NUEVOOOOOO"""
 
     def get_fitness(self):

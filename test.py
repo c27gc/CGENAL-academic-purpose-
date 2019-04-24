@@ -5,6 +5,7 @@ import matplotlib.figure
 from matplotlib import collections  as mc
 import pylab as pl
 from time import sleep
+import numpy as np
 
 
 def extendedMatrix(m):
@@ -26,7 +27,9 @@ def extendedMatrix(m):
         print(type(B))
     return B
 
-numero_de_elementos = 20
+f = 10
+c = 10
+numero_de_elementos = f*c
 tamano_del_cromosoma = 12
 elitism = "direct-elitism"
 probabilidad_de_cruce = 0.9
@@ -44,14 +47,16 @@ posiciones = {1:(0,0),2:(0,1),3:(0,2),4:(0,3),
 5:(1,3),6:(2,3),7:(3,3),8:(3,2),
 9:(3,1),10:(3,0),11:(2,0),12:(1,0)}
 
+
+
 a = InitialPopulation(numero_de_elementos, tamano_del_cromosoma, problema)
-aut = np.ones((4,5,12))
-bk = np.zeros((4,5,12))
-fit = np.ones((4,5))
+aut = np.ones((f,c,12))
+bk = np.zeros((f,c,12))
+fit = np.ones((f,c))
 k = 0
 
-for i in range(0,4):
-    for j in range(0,5):
+for i in range(0,f):
+    for j in range(0,c):
         aut[i][j]=np.asarray(a.get_individuals()[k].chromo)
         fit[i][j]=np.asarray(a.get_individuals()[k].get_fitness())
         k+=1
@@ -60,18 +65,17 @@ for i in range(0,4):
 autEx = extendedMatrix(aut)
 fitEx = extendedMatrix(fit)
 
-print(np.shape(autEx))
 
 dx = {0:-1, 1:0, 2:1, 3:0}
 dy = {0:0, 1:-1, 2:0, 3:1}
 
-p2 = np.zeros((4,5,12))
-p2fit = np.zeros((4,5))
+p2 = np.zeros((f,c,12))
+p2fit = np.zeros((f,c))
 
-for i in range(0,4):
-    for j in range(0,5):
+for i in range(0,f):
+    for j in range(0,c):
         t=np.random.randint(0,4)
-        print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
+        #print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
         x = i + 1 + dx[t]
         y = j + 1 + dy[t]
         p2[i,j] = autEx[x,y]
@@ -80,11 +84,9 @@ for i in range(0,4):
 fitAverages.append(a.get_fitness_average())
 thebest.append(a.get_best_individual().get_fitness())
 b = Crossing(a,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
-b.cross()
-print("_______________________________________")
-parents2 = b.get_childs()
-for i in range(0,len(parents2)):
-    print(parents2[i])
+C,mt = b.sCross(aut,p2)
+C = np.array(C)
+K = C.reshape(-1,C.shape[-1])
 
 
 mutation.append(b.get_mutation())
@@ -93,9 +95,42 @@ gh.append(count)
 print('Trabajando...')
 
 while(count!=iteraciones):
-    childs = Generation(parents2,problema)
+
+    childs = Generation(K.tolist(),8)
     fitAverages.append(childs.get_fitness_average())
     thebest.append(childs.get_best_individual().get_fitness())
+
+    if count % int(iteraciones/100) == 2:
+        aut = np.ones((f,c,12))
+        aut = aut.tolist()
+        fit = np.ones((f,c))
+        fit = fit.tolist()
+        k = 0
+        for i in range(0,f):
+            for j in range(0,c):
+                aut[i][j]=np.asarray(childs.get_individuals()[k].chromo)
+                fit[i][j]=np.asarray(childs.get_individuals()[k].get_fitness())
+                k+=1
+        fit = np.array(fit)
+        aut = np.array(aut)
+        """fig, ax = plt.subplots(211)
+        min_val, max_val = 0, 1
+        print(type(ax))"""
+        plt.matshow(fit, cmap=plt.cm.Blues)
+
+        """for i in xrange(4):
+            for j in xrange(5):
+                c = fit[j,i]
+                ax.text(i, j, str(c), va='center', ha='center')"""
+        """plt.show()
+        plt.close(1)"""
+
+        plt.show(block=False)
+        plt.pause(0.5)
+        plt.close()
+
+
+
     if count % int(iteraciones/100) == 1:
         print("Iteracion = {}\n Mejor Individuo = {}".format(count,childs.get_best_individual().chromo))
         lines=[]
@@ -136,17 +171,21 @@ while(count!=iteraciones):
         plt.text(2,0, s=11)
         plt.scatter(1,0, s=10)
         plt.text(1,0, s=12)
-        plt.show()
-        plt.close(1)
+        """plt.show()
+        plt.close(1)"""
+        plt.show(block=False)
+        plt.pause(0.5)
+        plt.close()
     #for i in range(0,12):
 
 
     punto_de_cruce = random.randint(1,11)
     #punto_de_cruce = 6
     Cross = Crossing(childs,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
-    Cross.cross()
-    parents2 = Cross.get_childs()
-    mutation.append(Cross.get_mutation())
+    C,mt = b.sCross(aut,p2)
+    C = np.array(C)
+    K = C.reshape(-1,C.shape[-1])
+    #mutation.append(Cross.get_mutation())
     count+=1
     gh.append(count)
     #print(count)

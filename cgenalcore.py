@@ -53,7 +53,7 @@ class InitialPopulation:
                 chromosome=random.sample(a,len(a))
                 self.__individuals.append(ChromosomeClass(chromosome, problem))
                 self.__fitness.append(self.__individuals[i].get_fitness())
-                print("{}\t {}\t {}".format(chromosome,self.__individuals[i].get_fitness(),(self.__individuals[i].get_fitness()**(-1))*12))
+                print("{}\t {}\t {}".format(chromosome,self.__individuals[i].get_fitness(),(self.__individuals[i].get_fitness()**(-1))*(120)))
 
 
         #"""FIN CODIGO NUEVOOOOOO"""
@@ -143,7 +143,7 @@ class Generation:
         fitness_copy[best_individual_index]=min(fitness_copy)
         best_individual_index = fitness_copy.index(max(fitness_copy))
         self.__second_best_individual = self.__individuals[best_individual_index]
-
+        print
         #finding the wost and second wost individuals and their indices
         fitness_copy=copy.deepcopy(self.__fitness)
         worst_individual_index = fitness_copy.index(max(fitness_copy))
@@ -394,41 +394,42 @@ class Crossing():
         count = 0
         A = a.tolist()
         B = b.tolist()
-        C = np.ones(a.shape())
+        C = np.ones(np.shape(A))
+        C = C.tolist()
         self.__childs = []
         self.__mutations = 0
         occur=0
-        while(1):
-            for i in range(0,np.shape(a)[0]):
-                for j in range(0,np.shape(a)[1]):
-                    self.cross_point = random.randint(1,11)
-                    slc = random.choice([True, False])
+        for i in range(0,np.shape(a)[0]):
+            for j in range(0,np.shape(a)[1]):
+                self.cross_point = random.randint(1,11)
+                slc = random.choice([True, False])
 
-                    if slc :
-                        p1=A[i][j][:self.cross_point]
-                        k=p1.copy()
-                        for t in range(0,len(A[i][j])):
-                            try:
-                                inx=p1.index(B[i][j][t])
-                            except ValueError:
-                                k.append(B[i][j][t])
-                        self.__childs.append(k)
+                if slc :
+                    p1=A[i][j][:self.cross_point]
+                    k=p1.copy()
+                    for t in range(0,len(A[i][j])):
+                        try:
+                            inx=p1.index(B[i][j][t])
+                        except ValueError:
+                            k.append(B[i][j][t])
+                    self.__childs.append(k)
+                else:
+                    p2=B[i][j][:self.cross_point]
+                    k=p2.copy()
+                    for t in range(0,len(A[i][j])):
+                        try:
+                            inx=p2.index(A[i][j][t])
+                        except ValueError:
+                            k.append(A[i][j][t])
+                    self.__childs.append(k)
+                self.__childs[count], occur = self.mutation(self.__childs[count])
+                self.__mutations += occur
+                #print("LLEGA")
 
-                    else:
-                        p2=B[i][j][:self.cross_point]
-                        k=p2.copy()
-                        for t in range(0,len(A[i][j])):
-                            try:
-                                inx=p2.index(A[i][j][t])
-                            except ValueError:
-                                k.append(A[i][j][t])
-                        self.__childs.append(k)
+                C[i][j] = self.__childs[count]
+                count += 1
 
-                    self.__childs[count], occur = self.mutation(self.__childs[count])
-                    self.__mutations += occur
-                    count += 1
-                    C[i][j] = self.__childs[count]
-
+        return C, self.__mutations
 
     def get_childs(self):
         return self.__childs
