@@ -47,7 +47,7 @@ class InitialPopulation:
 
         #"""CODIGO NUEVOOOOOO"""
         if (problem == 7 or problem == 8):
-            a=list(range(1,13))
+            a=list(range(1,size_of_chromosomes + 1))
             for i in range(0,number_of_individuals):
                 chromosome=[]
                 chromosome=random.sample(a,len(a))
