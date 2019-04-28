@@ -19,7 +19,7 @@ class InitialPopulation:
     __best_individual = []
     __second_best_individual = []
 
-    def __init__(self, number_of_individuals, size_of_chromosomes, problem):
+    def __init__(self, number_of_individuals, size_of_chromosomes, problem, f=10, c=10):
         self.number_of_individuals = number_of_individuals
         self.size_of_chromosomes = size_of_chromosomes
         #Creating individual and list of fitness
@@ -55,6 +55,18 @@ class InitialPopulation:
                 self.__fitness.append(self.__individuals[i].get_fitness())
                 print("{}\t {}\t {}".format(chromosome,self.__individuals[i].get_fitness(),(self.__individuals[i].get_fitness()**(-1))*(120)))
 
+            aut = np.ones((f,c,size_of_chromosomes))
+            fit = np.ones((f,c))
+            k = 0
+            for i in range(0,f):
+                for j in range(0,c):
+                    aut[i][j] = np.asarray(self.__individuals[k].chromo)
+                    fit[i][j] = np.asarray(self.__individuals[k].get_fitness())
+                    k += 1
+            self.__chromo_map = aut
+            self.__fit_map = fit
+            self.__e_chromo_map = extendedMatrix(aut)
+            self.__e_fit_map = extendedMatrix(fit)
 
         #"""FIN CODIGO NUEVOOOOOO"""
 
@@ -68,6 +80,18 @@ class InitialPopulation:
         fitness_copy[best_individual_index]=min(fitness_copy)
         best_individual_index = fitness_copy.index(max(fitness_copy))
         self.__second_best_individual = self.__individuals[best_individual_index]
+
+    def get_chromo_map(self):
+        return self.__chromo_map
+
+    def get_e_chromo_map(self):
+        return self.__e_chromo_map
+
+    def get_fit_map(self):
+        return self.__fit_map
+
+    def get_e_fit_map(self):
+        return self.__e_fit_map
 
     def get_individuals(self):
         return self.__individuals
@@ -436,3 +460,22 @@ class Crossing():
 
     def get_mutation(self):
         return self.__mutations
+
+def extendedMatrix(m):
+    s=np.shape(m)
+    B=[]
+    A=m
+    if len(s) > 3 or len(s) < 2:
+        print("Error, la matriz debe ser al menos de 2 dimensiones y maximo de 3 demensioens.")
+    else:
+        if len(s) == 2:
+            B=np.pad(A,((1, 1), (1, 1)), 'wrap')
+        if len(s) == 3:
+            B=np.pad(A,((1, 1), (1, 1), (0,0)), 'wrap')
+
+        B[0,0]=0
+        B[0,s[1]+1]=0
+        B[s[0]+1,0]=0
+        B[s[0]+1,s[1]+1]=0
+        print(type(B))
+    return B

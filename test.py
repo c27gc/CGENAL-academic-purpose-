@@ -8,25 +8,6 @@ from time import sleep
 import numpy as np
 
 
-def extendedMatrix(m):
-    s=np.shape(m)
-    B=[]
-    A=m
-    if len(s) > 3 or len(s) < 2:
-        print("Error, la matriz debe ser al menos de 2 dimensiones y maximo de 3 demensioens.")
-    else:
-        if len(s) == 2:
-            B=np.pad(A,((1, 1), (1, 1)), 'wrap')
-        if len(s) == 3:
-            B=np.pad(A,((1, 1), (1, 1), (0,0)), 'wrap')
-
-        B[0,0]=0
-        B[0,s[1]+1]=0
-        B[s[0]+1,0]=0
-        B[s[0]+1,s[1]+1]=0
-        print(type(B))
-    return B
-
 f = 10
 c = 10
 numero_de_elementos = f*c
@@ -50,48 +31,48 @@ posiciones = {1:(0,0),2:(0,1),3:(0,2),4:(0,3),
 
 
 a = InitialPopulation(numero_de_elementos, tamano_del_cromosoma, problema)
-aut = np.ones((f,c,12))
-bk = np.zeros((f,c,12))
-fit = np.ones((f,c))
-k = 0
+fitAverages.append(a.get_fitness_average())
+thebest.append(a.get_best_individual().get_fitness())
 
-for i in range(0,f):
-    for j in range(0,c):
-        aut[i][j]=np.asarray(a.get_individuals()[k].chromo)
-        fit[i][j]=np.asarray(a.get_individuals()[k].get_fitness())
-        k+=1
+#AQUI TRANSFORMA LAS LISTAS EN ARRAY Y LAS EXTIENDE
+
+aut = a.get_chromo_map()
+fit = a.get_fit_map()
+autEx = a.get_e_chromo_map()
+fitEx = a.get_e_fit_map()
+
 
 #AQUI SE DEFINE LA POLITICA DE SELECCIOND DE PADRES
-autEx = extendedMatrix(aut)
-fitEx = extendedMatrix(fit)
-
-
 dx = {0:-1, 1:0, 2:1, 3:0}
 dy = {0:0, 1:-1, 2:0, 3:1}
 
-p2 = np.zeros((f,c,12))
+p2 = np.zeros((f,c,tamano_del_cromosoma))
 p2fit = np.zeros((f,c))
 
 for i in range(0,f):
     for j in range(0,c):
-        t=np.random.randint(0,4)
+        t = np.random.randint(0,4)
         #print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
         x = i + 1 + dx[t]
         y = j + 1 + dy[t]
         p2[i,j] = autEx[x,y]
         p2fit[i,j] = fitEx[x,y]
-#print(fitEx)
-fitAverages.append(a.get_fitness_average())
-thebest.append(a.get_best_individual().get_fitness())
+
+
+
+#CRUCE Y MUTACION
 b = Crossing(a,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
 C,mt = b.sCross(aut,p2)
 C = np.array(C)
 K = C.reshape(-1,C.shape[-1])
 
-
 mutation.append(b.get_mutation())
 count=1
 gh.append(count)
+
+fig, (ax1, ax2) = plt.subplots(1,2)
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
 print('Trabajando...')
 
 while(count!=iteraciones):
@@ -100,8 +81,8 @@ while(count!=iteraciones):
     fitAverages.append(childs.get_fitness_average())
     thebest.append(childs.get_best_individual().get_fitness())
 
-    if count % int(iteraciones/100) == 2:
-        aut = np.ones((f,c,12))
+    if count % int(iteraciones/100) == 1:
+        aut = np.ones((f,c,tamano_del_cromosoma))
         aut = aut.tolist()
         fit = np.ones((f,c))
         fit = fit.tolist()
@@ -116,7 +97,8 @@ while(count!=iteraciones):
         """fig, ax = plt.subplots(211)
         min_val, max_val = 0, 1
         print(type(ax))"""
-        plt.matshow(fit, cmap=plt.cm.Blues)
+
+        ax2.matshow(fit, cmap=plt.cm.Blues)
 
         """for i in xrange(4):
             for j in xrange(5):
@@ -125,13 +107,7 @@ while(count!=iteraciones):
         """plt.show()
         plt.close(1)"""
 
-        plt.show(block=False)
-        plt.pause(0.5)
-        plt.close()
 
-
-
-    if count % int(iteraciones/100) == 1:
         print("Iteracion = {}\n Mejor Individuo = {}".format(count,childs.get_best_individual().chromo))
         lines=[]
         for i in range(0,len(childs.get_best_individual().chromo)-1):
@@ -143,46 +119,51 @@ while(count!=iteraciones):
             h=[]
         #lines.append((lines[0][0],lines[11][1]))
         lc = mc.LineCollection(lines, linewidths=2)
-        fig, ax = pl.subplots()
-        ax.add_collection(lc)
-        ax.autoscale()
-        ax.margins(0.1)
-        plt.scatter(0,0, s=10)
-        plt.text(0,0, s=1)
-        plt.scatter(0,1, s=10)
-        plt.text(0,1, s=2)
-        plt.scatter(0,2, s=10)
-        plt.text(0,2, s=3)
-        plt.scatter(0,3, s=10)
-        plt.text(0,3, s=4)
-        plt.scatter(1,3, s=10)
-        plt.text(1,3, s=5)
-        plt.scatter(2,3, s=10)
-        plt.text(2,3, s=6)
-        plt.scatter(3,3, s=10)
-        plt.text(3,3, s=7)
-        plt.scatter(3,2, s=10)
-        plt.text(3,2, s=8)
-        plt.scatter(3,1, s=10)
-        plt.text(3,1, s=9)
-        plt.scatter(3,0, s=10)
-        plt.text(3,0, s=10)
-        plt.scatter(2,0, s=10)
-        plt.text(2,0, s=11)
-        plt.scatter(1,0, s=10)
-        plt.text(1,0, s=12)
+
+        ax1.add_collection(lc)
+        ax1.autoscale()
+        ax1.margins(0.1)
+
+        ax1.scatter(0,0, s=10)
+        ax1.text(0,0, s=1)
+        ax1.scatter(0,1, s=10)
+        ax1.text(0,1, s=2)
+        ax1.scatter(0,2, s=10)
+        ax1.text(0,2, s=3)
+        ax1.scatter(0,3, s=10)
+        ax1.text(0,3, s=4)
+        ax1.scatter(1,3, s=10)
+        ax1.text(1,3, s=5)
+        ax1.scatter(2,3, s=10)
+        ax1.text(2,3, s=6)
+        ax1.scatter(3,3, s=10)
+        ax1.text(3,3, s=7)
+        ax1.scatter(3,2, s=10)
+        ax1.text(3,2, s=8)
+        ax1.scatter(3,1, s=10)
+        ax1.text(3,1, s=9)
+        ax1.scatter(3,0, s=10)
+        ax1.text(3,0, s=10)
+        ax1.scatter(2,0, s=10)
+        ax1.text(2,0, s=11)
+        ax1.scatter(1,0, s=10)
+        ax1.text(1,0, s=12)
         """plt.show()
         plt.close(1)"""
+
+
+
         plt.show(block=False)
-        plt.pause(0.5)
-        plt.close()
+        plt.pause(1)
+        ax1.clear()
+        ax2.clear()
     #for i in range(0,12):
 
 
     punto_de_cruce = random.randint(1,11)
     #punto_de_cruce = 6
     Cross = Crossing(childs,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
-    C,mt = b.sCross(aut,p2)
+    C,mt = Cross.sCross(aut,p2)
     C = np.array(C)
     K = C.reshape(-1,C.shape[-1])
     #mutation.append(Cross.get_mutation())
@@ -191,6 +172,7 @@ while(count!=iteraciones):
     #print(count)
 
 print('Hecho: \n'+ 'Mutaciones: ' + str(sum(mutation))+ "\n" + 'Mejor Solución: ' + str(childs.get_best_individual().chromo) + '\nMejor Solución(Distancia): ' + str(childs.get_best_individual().get_fitness()**(-1)*12)+'\nFitness de la Mejor Solución: ' + str(childs.get_best_individual().get_fitness())+'\nIteraciones: ' + str(count) )
+plt.close()
 
 x=np.asarray(fitAverages)
 x2=np.asarray(thebest)

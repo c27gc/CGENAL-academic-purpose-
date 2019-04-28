@@ -39,3 +39,6 @@ def sCross(self, a, b):
             count += 1
 
     return C, self.__mutations
+
+def kCross():
+    
