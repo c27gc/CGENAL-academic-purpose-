@@ -455,6 +455,9 @@ class Crossing():
 
         return C, self.__mutations
 
+    def kCross():
+        pass
+
     def get_childs(self):
         return self.__childs
 
