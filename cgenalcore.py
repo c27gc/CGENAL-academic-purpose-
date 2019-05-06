@@ -455,6 +455,7 @@ class Crossing():
 
         return C, self.__mutations
 
+#Cruce de dos puntos
     def kCross():
         pass
 
