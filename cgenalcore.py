@@ -309,7 +309,7 @@ class Crossing():
             for i in range(0,f):
                 for j in range(0,c):
                     for k in range(0,8)
-                        
+
     def mutation(self,chromosome):
         #"""NUEVOOOOOO"""
         if self.problem <= 6:
