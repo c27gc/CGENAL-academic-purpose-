@@ -281,26 +281,29 @@ class Crossing():
         self.__childs = []
         self.__mutations = 0
 
-    def parent2(self, type):
+    def parent2(self, type = 'random', neighborhood = 'vonN'):
+
         #AQUI SE DEFINE LA POLITICA DE SELECCIOND DE PADRES
-        dx = {0:-1, 1:0, 2:1, 3:0}
-        dy = {0:0, 1:-1, 2:0, 3:1}
+        if type == 'random':
+            dx = {0:-1, 1:0, 2:1, 3:0}
+            dy = {0:0, 1:-1, 2:0, 3:1}
 
-        p2 = np.zeros((f,c,tamano_del_cromosoma))
-        p2fit = np.zeros((f,c))
+            p2 = np.zeros((f,c,tamano_del_cromosoma))
+            p2fit = np.zeros((f,c))
 
-        for i in range(0,f):
-            for j in range(0,c):
-                t = np.random.randint(0,4)
-                #print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
-                x = i + 1 + dx[t]
-                y = j + 1 + dy[t]
-                p2[i,j] = autEx[x,y]
-                p2fit[i,j] = fitEx[x,y]
+            for i in range(0,f):
+                for j in range(0,c):
+                    t = np.random.randint(0,4)
+                    #print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
+                    x = i + 1 + dx[t]
+                    y = j + 1 + dy[t]
+                    p2[i,j] = autEx[x,y]
+                    p2fit[i,j] = fitEx[x,y]
 
-        self.p2 = p2
-        self.p2fit = p2fit
-
+            self.p2 = p2
+            self.p2fit = p2fit
+        if type == 'roulette':
+            
 
 
     def mutation(self,chromosome):
