@@ -47,7 +47,7 @@ class InitialPopulation:
 
         #"""CODIGO NUEVOOOOOO"""
         if (problem == 7 or problem == 8):
-            a=list(range(1,size_of_chromosomes + 1))
+            a = list(range(1,size_of_chromosomes + 1))
             for i in range(0,number_of_individuals):
                 chromosome=[]
                 chromosome=random.sample(a,len(a))
@@ -146,9 +146,10 @@ class Generation:
     __worst_individual = []
     __second_worst_individual = []
 
-    def __init__(self, list_of_individuals, problem):
+    def __init__(self, list_of_individuals, problem, f=10,c=10):
         self.list_of_individuals = list_of_individuals
         number_of_individuals = len(list_of_individuals)
+        size_of_chromosomes = len(list_of_individuals[0])
 
         #Creating individual and list of fitness
         self.__individuals = []
@@ -175,6 +176,32 @@ class Generation:
         fitness_copy[worst_individual_index]=max(fitness_copy)
         worst_individual_index = fitness_copy.index(min(fitness_copy))
         self.__second_worst_individual = self.__individuals[worst_individual_index]
+
+        if problem == 8:
+            aut = np.ones((f,c,size_of_chromosomes))
+            fit = np.ones((f,c))
+            k = 0
+            for i in range(0,f):
+                for j in range(0,c):
+                    aut[i][j] = np.asarray(self.__individuals[k].chromo)
+                    fit[i][j] = np.asarray(self.__individuals[k].get_fitness())
+                    k += 1
+            self.__chromo_map = aut
+            self.__fit_map = fit
+            self.__e_chromo_map = extendedMatrix(aut)
+            self.__e_fit_map = extendedMatrix(fit)
+
+    def get_chromo_map(self):
+        return self.__chromo_map
+
+    def get_e_chromo_map(self):
+        return self.__e_chromo_map
+
+    def get_fit_map(self):
+        return self.__fit_map
+
+    def get_e_fit_map(self):
+        return self.__e_fit_map
 
     def get_individuals(self):
         return self.__individuals
@@ -212,7 +239,7 @@ class Crossing():
     __parents = []
     __childs = []
     __mutations = 0
-    def __init__(self, list_of_individuals, cross_point, cross_probability, mutation_probability,elitism="non-elitism",mutation_type="normal",problem=1):
+    def __init__(self, list_of_individuals, cross_point, cross_probability, mutation_probability,elitism="non-elitism",mutation_type="normal",problem):
         AQUI1 = time.time()
         self.list_of_individuals = list_of_individuals
         self.cross_point = cross_point
@@ -229,6 +256,18 @@ class Crossing():
         self.__probability_value = [sum(relative_fitness[:i+1]) for i in range(len(relative_fitness))]
         self.__mutations = 0
 
+        if problem == 8:
+            aut = self.list_of_individuals.get_chromo_map()
+            fit = self.list_of_individuals.get_fit_map()
+            autEx = self.list_of_individuals.get_e_chromo_map()
+            fitEx = self.list_of_individuals.get_e_fit_map()
+
+            f = np.shape(aut)[0]
+            c = np.shape(aut)[1]
+            tamano_del_cromosoma = np.shape(aut)[2]
+
+
+
     def __del__(self):
         self.list_of_individuals = 0
         self.cross_point = 0
@@ -241,6 +280,28 @@ class Crossing():
         self.__parents = []
         self.__childs = []
         self.__mutations = 0
+
+    def parent2(self, type):
+        #AQUI SE DEFINE LA POLITICA DE SELECCIOND DE PADRES
+        dx = {0:-1, 1:0, 2:1, 3:0}
+        dy = {0:0, 1:-1, 2:0, 3:1}
+
+        p2 = np.zeros((f,c,tamano_del_cromosoma))
+        p2fit = np.zeros((f,c))
+
+        for i in range(0,f):
+            for j in range(0,c):
+                t = np.random.randint(0,4)
+                #print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
+                x = i + 1 + dx[t]
+                y = j + 1 + dy[t]
+                p2[i,j] = autEx[x,y]
+                p2fit[i,j] = fitEx[x,y]
+
+        self.p2 = p2
+        self.p2fit = p2fit
+
+
 
     def mutation(self,chromosome):
         #"""NUEVOOOOOO"""

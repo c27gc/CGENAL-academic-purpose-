@@ -62,7 +62,7 @@ for i in range(0,f):
 
 #CRUCE Y MUTACION
 b = Crossing(a,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
-C,mt = b.sCross(aut,p2)
+C,mt = b.sCross(aut)
 C = np.array(C)
 K = C.reshape(-1,C.shape[-1])
 
