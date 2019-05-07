@@ -303,7 +303,12 @@ class Crossing():
             self.p2 = p2
             self.p2fit = p2fit
         if type == 'roulette':
-            
+            p2 = np.zeros((f,c,tamano_del_cromosoma))
+            p2fit = np.zeros((f,c))
+
+            for i in range(0,f):
+                for j in range(0,c):
+                    for k in range(0,8)
 
 
     def mutation(self,chromosome):
