@@ -168,7 +168,7 @@ class Generation:
         fitness_copy[best_individual_index]=min(fitness_copy)
         best_individual_index = fitness_copy.index(max(fitness_copy))
         self.__second_best_individual = self.__individuals[best_individual_index]
-        print
+
         #finding the wost and second wost individuals and their indices
         fitness_copy=copy.deepcopy(self.__fitness)
         worst_individual_index = fitness_copy.index(max(fitness_copy))
@@ -239,7 +239,7 @@ class Crossing():
     __parents = []
     __childs = []
     __mutations = 0
-    def __init__(self, list_of_individuals, cross_point, cross_probability, mutation_probability,elitism="non-elitism",mutation_type="normal",problem):
+    def __init__(self, list_of_individuals, cross_point, cross_probability, mutation_probability,elitism="non-elitism",mutation_type="normal",problem=8):
         AQUI1 = time.time()
         self.list_of_individuals = list_of_individuals
         self.cross_point = cross_point
@@ -257,15 +257,13 @@ class Crossing():
         self.__mutations = 0
 
         if problem == 8:
-            aut = self.list_of_individuals.get_chromo_map()
-            fit = self.list_of_individuals.get_fit_map()
-            autEx = self.list_of_individuals.get_e_chromo_map()
-            fitEx = self.list_of_individuals.get_e_fit_map()
-
-            f = np.shape(aut)[0]
-            c = np.shape(aut)[1]
-            tamano_del_cromosoma = np.shape(aut)[2]
-
+            self.aut = self.list_of_individuals.get_chromo_map()
+            self.fit = self.list_of_individuals.get_fit_map()
+            self.autEx = self.list_of_individuals.get_e_chromo_map()
+            self.fitEx = self.list_of_individuals.get_e_fit_map()
+            self.f = np.shape(self.aut)[0]
+            self.c = np.shape(self.aut)[1]
+            self.tamano_del_cromosoma = np.shape(self.aut)[2]
 
 
     def __del__(self):
@@ -288,29 +286,51 @@ class Crossing():
             dx = {0:-1, 1:0, 2:1, 3:0}
             dy = {0:0, 1:-1, 2:0, 3:1}
 
-            p2 = np.zeros((f,c,tamano_del_cromosoma))
-            p2fit = np.zeros((f,c))
+            p2 = np.zeros((self.f,self.c,self.tamano_del_cromosoma))
+            p2fit = np.zeros((self.f,self.c))
 
-            for i in range(0,f):
-                for j in range(0,c):
+            for i in range(0,self.f):
+                for j in range(0,self.c):
                     t = np.random.randint(0,4)
                     #print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
                     x = i + 1 + dx[t]
                     y = j + 1 + dy[t]
-                    p2[i,j] = autEx[x,y]
-                    p2fit[i,j] = fitEx[x,y]
+                    p2[i,j] = self.autEx[x,y]
+                    p2fit[i,j] = self.fitEx[x,y]
 
             self.p2 = p2
             self.p2fit = p2fit
+
         if type == 'roulette':
-            p2 = np.zeros((f,c,tamano_del_cromosoma))
-            p2fit = np.zeros((f,c))
+            lts = [[-1,0],[0,1],[0,-1],[1,0]]#[-1,-1],[-1,1],[1,1],[1,-1]]
+            self.p2 = np.zeros((self.f,self.c,self.tamano_del_cromosoma))
+            self.p2fit = np.zeros((self.f,self.c))
 
-            for i in range(0,f):
-                for j in range(0,c):
-                    for k in range(0,8)
+            lista = []
+            fitlista = []
+            k=0
+            for i in range(0,self.f):
+                for j in range(0,self.c):
+                    tee = []
+                    teu = []
+                    for m,n in lts:
+                        tee.append(self.autEx[i + 1 + m, j + 1 + n])
+                        teu.append(self.fitEx[i + 1 + m, j + 1 + n])
+                    lista.append(tee)
+                        #print(self.autEx[i + 1 + m, j + 1 + n])
+                    fitlista.append(teu)
+                    fitness = fitlista[k]
+                    total_fitness = float(sum(fitness))
+                    relative_fitness = [f/total_fitness for f in fitness]
+                    self.__probability_value2 = [sum(relative_fitness[:i+1]) for i in range(len(relative_fitness))]
 
-
+                    for (w, individual) in enumerate(lista[k]):
+                        r = random.random()
+                        if r <= self.__probability_value2[w]:
+                            self.p2[i,j] = individual
+                            self.p2fit[i,j] = fitlista[k][w]
+                            break
+                    k+=1
     def mutation(self,chromosome):
         #"""NUEVOOOOOO"""
         if self.problem <= 6:
@@ -396,7 +416,11 @@ class Crossing():
                         chromosome[k2:k1]=random.sample(chromosome[k2:k1],len(chromosome[k2:k1]))
                 if self.mutation_type == "evaluated-npermutation":
                     ch2=[chromosome]
-                    gen=Generation(ch2,self.problem)
+                    if self.problem == 8:
+                        gff = 7
+                    else:
+                        gff = self.problem
+                    gen=Generation(ch2,gff)
                     if k1 < k2:
                         occur+=1
                         chromosome[k1:k2]=random.sample(chromosome[k1:k2],len(chromosome[k1:k2]))
@@ -405,7 +429,11 @@ class Crossing():
                         chromosome[k2:k1]=random.sample(chromosome[k2:k1],len(chromosome[k2:k1]))
                     occur+=1
                     ch2=[chromosome]
-                    gen2=Generation(ch2,self.problem)
+                    if self.problem == 8:
+                        gff = 7
+                    else:
+                        gff = self.problem
+                    gen2=Generation(ch2,gff)
                     if gen.get_individuals()[0].get_fitness() >= gen2.get_individuals()[0].get_fitness():
                         chromosome=gen.get_individuals()[0].chromo
                         occur-=1
@@ -482,9 +510,11 @@ class Crossing():
                     self.__childs[self.__childs.index(ChildsAux.get_worst_individual().chromo)] = self.list_of_individuals.get_best_individual().chromo
                 break
 
-    def sCross(self, a, b):
+    def sCross(self):
         self.problem = 8
         count = 0
+        a = self.aut
+        b = self.p2
         A = a.tolist()
         B = b.tolist()
         C = np.ones(np.shape(A))
@@ -522,10 +552,33 @@ class Crossing():
                 C[i][j] = self.__childs[count]
                 count += 1
 
+
+
+
+        chromoc=C[i][j].copy()
+        chromoc.append(chromoc[0])
+        posiciones = {1:[0,0],2:[0,1],3:[0,2],4:[0,3],
+        5:[1,3],6:[2,3],7:[3,3],8:[3,2],
+        9:[3,1],10:[3,0],11:[2,0],12:[1,0]}
+        s=0
+        for i in range(1,len(chromoc)):
+            s+=self.distancia(posiciones[chromoc[i-1]],posiciones[chromoc[i]])
+        self.__fitnessCC = (120)/s
+
+        i,j = np.where(self.fit == self.fit.max())
+        i = int(i[0])
+        j = int(j[0])
+        if self.__fitnessCC<self.fit[i,j]:
+            C[i][j] = self.aut[i,j]
+
         return C, self.__mutations
 
 #Cruce de dos puntos
-    def kCross():
+    def distancia(self,A,B):
+        d=math.sqrt((A[0]-B[0])**2 + (A[1]-B[1])**2)
+        return d
+
+    def kCross(self):
         pass
 
     def get_childs(self):
@@ -550,5 +603,4 @@ def extendedMatrix(m):
         B[0,s[1]+1]=0
         B[s[0]+1,0]=0
         B[s[0]+1,s[1]+1]=0
-        print(type(B))
     return B

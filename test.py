@@ -16,7 +16,7 @@ elitism = "direct-elitism"
 probabilidad_de_cruce = 0.9
 probabilidad_de_mutacion = 0.002
 mutacion = "evaluated-npermutation"
-problema = 7
+problema = 8
 gh = []
 fitAverages = []
 thebest = []
@@ -36,33 +36,11 @@ thebest.append(a.get_best_individual().get_fitness())
 
 #AQUI TRANSFORMA LAS LISTAS EN ARRAY Y LAS EXTIENDE
 
-aut = a.get_chromo_map()
-fit = a.get_fit_map()
-autEx = a.get_e_chromo_map()
-fitEx = a.get_e_fit_map()
-
-
-#AQUI SE DEFINE LA POLITICA DE SELECCIOND DE PADRES
-dx = {0:-1, 1:0, 2:1, 3:0}
-dy = {0:0, 1:-1, 2:0, 3:1}
-
-p2 = np.zeros((f,c,tamano_del_cromosoma))
-p2fit = np.zeros((f,c))
-
-for i in range(0,f):
-    for j in range(0,c):
-        t = np.random.randint(0,4)
-        #print("t: {}\ndx[t]: {}\ndy[t]: {}".format(t,dx[t],dy[t]))
-        x = i + 1 + dx[t]
-        y = j + 1 + dy[t]
-        p2[i,j] = autEx[x,y]
-        p2fit[i,j] = fitEx[x,y]
-
-
 
 #CRUCE Y MUTACION
 b = Crossing(a,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
-C,mt = b.sCross(aut)
+b.parent2('roulette')
+C,mt = b.sCross()
 C = np.array(C)
 K = C.reshape(-1,C.shape[-1])
 
@@ -76,7 +54,6 @@ figManager.window.showMaximized()
 print('Trabajando...')
 
 while(count!=iteraciones):
-
     childs = Generation(K.tolist(),8)
     fitAverages.append(childs.get_fitness_average())
     thebest.append(childs.get_best_individual().get_fitness())
@@ -153,6 +130,7 @@ while(count!=iteraciones):
 
 
 
+
         plt.show(block=False)
         plt.pause(1)
         ax1.clear()
@@ -163,18 +141,18 @@ while(count!=iteraciones):
     punto_de_cruce = random.randint(1,11)
     #punto_de_cruce = 6
     Cross = Crossing(childs,punto_de_cruce,probabilidad_de_cruce,probabilidad_de_mutacion,elitism,mutacion,problema)
-    C,mt = Cross.sCross(aut,p2)
+    Cross.parent2('roulette')
+    C,mt = Cross.sCross()
     C = np.array(C)
     K = C.reshape(-1,C.shape[-1])
     #mutation.append(Cross.get_mutation())
     count+=1
     gh.append(count)
     #print(count)
-
-print('Hecho: \n'+ 'Mutaciones: ' + str(sum(mutation))+ "\n" + 'Mejor Solución: ' + str(childs.get_best_individual().chromo) + '\nMejor Solución(Distancia): ' + str(childs.get_best_individual().get_fitness()**(-1)*12)+'\nFitness de la Mejor Solución: ' + str(childs.get_best_individual().get_fitness())+'\nIteraciones: ' + str(count) )
+print('Hecho: \n'+ 'Mutaciones: ' + str(sum(mutation))+ "\n" + 'Mejor Solución: ' + str(childs.get_best_individual().chromo) + '\nMejor Solución(Distancia): ' + str(childs.get_best_individual().get_fitness()**(-1)*120)+'\nFitness de la Mejor Solución: ' + str(childs.get_best_individual().get_fitness())+'\nIteraciones: ' + str(count) )
 plt.close()
 
-x=np.asarray(fitAverages)
+"""x=np.asarray(fitAverages)
 x2=np.asarray(thebest)
 x3=np.asarray(mutation)
 gh=np.asarray(gh)
@@ -197,5 +175,5 @@ ax3.set_ylim(0,int(np.amax(x3)+1))
 ax3.grid(True)
 ax3.set_ylabel("Número de\n Mutaciones")
 ax3.set_xlabel("Iteraciones")
-ax3.plot(gh,x3)
+ax3.plot(gh,x3)"""
 #plt.show()
